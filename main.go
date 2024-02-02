@@ -1,44 +1,39 @@
 package main
 
 import (
-	appsv1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apps/v1"
-	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
+	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-
-		appLabels := pulumi.StringMap{
-			"app": pulumi.String("nginx"),
+		// Configuration data to be stored in the ConfigMap.
+		configData := map[string]string{
+			"key1": "value1",
+			"key2": "value2",
+			"key3": "value3",
 		}
-		deployment, err := appsv1.NewDeployment(ctx, "app-dep", &appsv1.DeploymentArgs{
-			Spec: appsv1.DeploymentSpecArgs{
-				Selector: &metav1.LabelSelectorArgs{
-					MatchLabels: appLabels,
-				},
-				Replicas: pulumi.Int(1),
-				Template: &corev1.PodTemplateSpecArgs{
-					Metadata: &metav1.ObjectMetaArgs{
-						Labels: appLabels,
-					},
-					Spec: &corev1.PodSpecArgs{
-						Containers: corev1.ContainerArray{
-							corev1.ContainerArgs{
-								Name:  pulumi.String("nginx"),
-								Image: pulumi.String("nginx"),
-							}},
-					},
-				},
+
+		// Convert configData to pulumi.StringMap
+		pulumiConfigData := pulumi.StringMap{}
+		for k, v := range configData {
+			pulumiConfigData[k] = pulumi.String(v)
+		}
+
+		// Create a ConfigMap with the above configuration data.
+		_, err := v1.NewConfigMap(ctx, "my-configmap", &v1.ConfigMapArgs{
+			Metadata: metav1.ObjectMetaArgs{
+				Name:      pulumi.String("my-configmap"),
+				Namespace: pulumi.String("default"),
 			},
+			Data: pulumiConfigData,
 		})
 		if err != nil {
 			return err
 		}
 
-		ctx.Export("name", deployment.Metadata.Name())
-
+		// Return without error.
 		return nil
 	})
 }

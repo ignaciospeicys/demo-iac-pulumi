@@ -70,3 +70,13 @@ kubectl get all
 ```
 
 This lists all resources in the default namespace, including those defined in your Pulumi project.
+
+---
+
+### Deleting resources
+If you wish to delete any of the resources previouly deployed via `pulumi up`, simply run the following:
+
+```bash
+pulumi destroy
+```
+Note: the operation needs to be confirmed in the CLI
