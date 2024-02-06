@@ -8,11 +8,12 @@ import (
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		// Configuration data to be stored in the ConfigMap.
-		configData := map[string]string{
-			"key1": "value1",
-			"key2": "value2",
-			"key3": "value3",
+		configProvider := NewJSONConfigDataProvider("config.json")
+
+		// Get the configuration data
+		configData, err := configProvider.GetConfigData()
+		if err != nil {
+			return err
 		}
 
 		// Convert configData to pulumi.StringMap
@@ -21,10 +22,10 @@ func main() {
 			pulumiConfigData[k] = pulumi.String(v)
 		}
 
-		// Create a ConfigMap with the above configuration data.
-		_, err := v1.NewConfigMap(ctx, "my-configmap", &v1.ConfigMapArgs{
+		// Create a ConfigMap with the above configuration data
+		_, err = v1.NewConfigMap(ctx, "generated-configmap", &v1.ConfigMapArgs{
 			Metadata: metav1.ObjectMetaArgs{
-				Name:      pulumi.String("my-configmap"),
+				Name:      pulumi.String("generated-configmap"),
 				Namespace: pulumi.String("default"),
 			},
 			Data: pulumiConfigData,
@@ -33,7 +34,7 @@ func main() {
 			return err
 		}
 
-		// Return without error.
+		// Return without error
 		return nil
 	})
 }
