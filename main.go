@@ -23,7 +23,7 @@ func main() {
 		}
 
 		// Create a ConfigMap with the above configuration data
-		_, err = v1.NewConfigMap(ctx, "generated-configmap", &v1.ConfigMapArgs{
+		cfmap, err := v1.NewConfigMap(ctx, "generated-configmap", &v1.ConfigMapArgs{
 			Metadata: metav1.ObjectMetaArgs{
 				Name:      pulumi.String("generated-configmap"),
 				Namespace: pulumi.String("default"),
@@ -34,6 +34,7 @@ func main() {
 			return err
 		}
 
+		ctx.Export("new configmap created", cfmap.Metadata.Name())
 		// Return without error
 		return nil
 	})
