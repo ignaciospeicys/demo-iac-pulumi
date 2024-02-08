@@ -19,6 +19,17 @@ After setting up your AWS account, configure your AWS credentials locally. You c
 - Create IAM User
 - Create Access Key for that user (CLI use case)
 - **AWS CLI**: Use the AWS CLI and run **`aws configure`** to set up your credentials. Pulumi will use these credentials by default.
-### **4. Run Pulumi Up**
 
-Run **`pulumi up`** to preview and deploy your AWS resources using your personal AWS account credentials.
+### **4. Run the program!**
+
+Due to the automated nature of the program, it is not needed to run **`pulumi up`** through the CLI to preview and deploy your AWS resources. 
+
+See attached Postman Collection covering the majority of use cases.
+
+---
+
+### Useful links
+
+- [Pulumi AWS docs](https://www.pulumi.com/docs/clouds/aws/)
+- [Documentation for the automation API](https://www.pulumi.com/automation/)
+- [Automation API examples](https://github.com/pulumi/automation-api-examples/tree/main)

@@ -47,10 +47,10 @@ func main() {
 
 		ctx := context.Background()
 		stackName := ginCtx.Param("stack")
-		program := initPulumiProgram(req)
+		programRun := runPulumi(req)
 
 		// Create or select the stack
-		s, err := auto.UpsertStackInlineSource(ctx, stackName, project, program)
+		s, err := auto.UpsertStackInlineSource(ctx, stackName, project, programRun)
 		if err != nil {
 			ginCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -80,7 +80,7 @@ func main() {
 	_ = r.Run("127.0.0.1:8083")
 }
 
-func initPulumiProgram(req *BucketCreateRequest) pulumi.RunFunc {
+func runPulumi(req *BucketCreateRequest) pulumi.RunFunc {
 	return func(ctx *pulumi.Context) error {
 		_, err := s3.NewBucket(ctx, req.Name, &s3.BucketArgs{
 			Versioning: s3.BucketVersioningArgs{
@@ -99,10 +99,10 @@ func ensurePlugins() {
 	ctx := context.Background()
 	w, err := auto.NewLocalWorkspace(ctx)
 	if err != nil {
-		fmt.Printf("Failed to setup and run http server: %v\n", err)
+		fmt.Printf("Failed to initialize local workspace: %v\n", err)
 		os.Exit(1)
 	}
-	err = w.InstallPlugin(ctx, "aws", "v6.21.0")
+	err = w.InstallPlugin(ctx, "aws", "v6.21.0") //verify latest version here: https://github.com/pulumi/pulumi-aws
 	if err != nil {
 		fmt.Printf("Failed to install program plugins: %v\n", err)
 		os.Exit(1)
