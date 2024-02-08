@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/s3"
 	"github.com/pulumi/pulumi/sdk/v3/go/auto"
+	"github.com/pulumi/pulumi/sdk/v3/go/auto/optup"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"log"
 	"net/http"
@@ -18,7 +19,14 @@ type BucketCreateRequest struct {
 	Versioning bool   `json:"enable_versioning"`
 }
 
+type BucketCreateResponse struct {
+	Stack string `json:"stack"`
+	URL   string `json:"url"`
+}
+
 var project = "demo-pulumi-aws"
+
+var VarBucketExport = "bucketName"
 
 func main() {
 	ensurePlugins()
@@ -56,9 +64,17 @@ func main() {
 			return
 		}
 
-		ginCtx.JSON(http.StatusOK, gin.H{
-			"message": "Resource created successfully",
-		})
+		upRes, err := s.Up(ctx, optup.ProgressStreams(os.Stdout))
+		if err != nil {
+			ginCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		response := &BucketCreateResponse{
+			Stack: stackName,
+			URL:   upRes.Outputs[VarBucketExport].Value.(string),
+		}
+		ginCtx.JSON(http.StatusOK, response)
 	})
 
 	_ = r.Run("127.0.0.1:8083")
@@ -74,7 +90,7 @@ func initPulumiProgram(req *BucketCreateRequest) pulumi.RunFunc {
 		if err != nil {
 			return err
 		}
-		ctx.Export("bucketName", pulumi.String(req.Name))
+		ctx.Export(VarBucketExport, pulumi.String(req.Name))
 		return nil
 	}
 }
