@@ -19,9 +19,11 @@ type BucketCreateResponse struct {
 var project = "demo-pulumi-aws"
 
 func main() {
-	objectStorageService := service.NewPulumiObjectStorageService()
-	objectStorageHandler := domain.NewObjectStorageHandler(project, objectStorageService)
-	httpRouter := infrastructure.NewHttpRouter(objectStorageHandler)
+	pulumiDeployService := service.NewPulumiDeployService()
+	objectStorageService := service.NewPulumiObjectStorageService(pulumiDeployService)
+	objectStorageHandler := domain.NewObjectStorageHandler(project, objectStorageService, pulumiDeployService)
+	pulumiHandler := domain.NewPulumiHandler()
+	httpRouter := infrastructure.NewHttpRouter(objectStorageHandler, pulumiHandler)
 	pulumiSetup := infrastructure.NewPulumiSetup()
 
 	r := httpRouter.SetupHttpServer()

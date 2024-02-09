@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"context"
 	"demo-pulumi-aws/dto"
 	"demo-pulumi-aws/service"
 	"encoding/json"
@@ -12,6 +11,7 @@ import (
 type ObjectStorageHandler struct {
 	project                    string
 	pulumiObjectStorageService *service.PulumiObjectStorageService
+	pulumiDeployService        *service.PulumiDeployService
 }
 
 type ObjectStorageCreateResponse struct {
@@ -19,35 +19,34 @@ type ObjectStorageCreateResponse struct {
 	URL   string `json:"url"`
 }
 
-func NewObjectStorageHandler(project string, pulumiObjectStorageService *service.PulumiObjectStorageService) *ObjectStorageHandler {
+func NewObjectStorageHandler(project string, pulumiObjectStorageService *service.PulumiObjectStorageService, pulumiDeployService *service.PulumiDeployService) *ObjectStorageHandler {
 	return &ObjectStorageHandler{
 		project:                    project,
 		pulumiObjectStorageService: pulumiObjectStorageService,
+		pulumiDeployService:        pulumiDeployService,
 	}
 }
 
-func (objHandler *ObjectStorageHandler) CreateBucket(ginCtx *gin.Context) {
+func (objHandler *ObjectStorageHandler) CreateBucket(ctx *gin.Context) {
 	req := &dto.ObjectStorageCreateRequest{}
 
-	if err := json.NewDecoder(ginCtx.Request.Body).Decode(&req); err != nil {
-		ginCtx.JSON(http.StatusBadRequest, gin.H{"error": "couldn't parse request body"})
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "couldn't parse request body"})
 		return
 	}
-
-	ctx := context.Background()
 
 	// Create the resource
 	storageResource := objHandler.pulumiObjectStorageService.CreateObjectStorageResource(req)
 
 	// Create or select the stack
-	stackName := ginCtx.Param("stack")
-	upRes, err := objHandler.pulumiObjectStorageService.PrepareAndDeployResource(ctx, stackName, objHandler.project, storageResource)
+	stackName := ctx.Param("stack")
+	upRes, err := objHandler.pulumiDeployService.PrepareAndDeployResource(ctx, stackName, objHandler.project, storageResource)
 	if err != nil {
-		ginCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ginCtx.JSON(http.StatusOK, &ObjectStorageCreateResponse{
+	ctx.JSON(http.StatusOK, &ObjectStorageCreateResponse{
 		Stack: stackName,
 		URL:   upRes.Outputs["bucketName"].Value.(string),
 	})
