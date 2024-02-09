@@ -28,6 +28,17 @@ See attached Postman Collection covering the majority of use cases.
 
 ---
 
+### Dev Guidelines
+
+#### Design with multi-cloud in mind
+
+Avoid names like ``S3BucketPort`` when you could easily use something like ``Storage Port``
+
+Here's an overview of the services provided by each major provider:
+![Cloud Comparisson](docs/cloud_products.png)
+
+---
+
 ### Useful links
 
 - [Pulumi AWS docs](https://www.pulumi.com/docs/clouds/aws/)
