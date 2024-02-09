@@ -1,8 +1,8 @@
-package adapters
+package service
 
 import (
 	"context"
-	"demo-pulumi-aws/domain"
+	"demo-pulumi-aws/dto"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/s3"
 	"github.com/pulumi/pulumi/sdk/v3/go/auto"
 	"github.com/pulumi/pulumi/sdk/v3/go/auto/optup"
@@ -31,7 +31,7 @@ func (service *PulumiObjectStorageService) PrepareAndDeployResource(ctx context.
 	return &upRes, nil
 }
 
-func (service *PulumiObjectStorageService) CreateObjectStorageResource(req *domain.ObjectStorageCreateRequest) pulumi.RunFunc {
+func (service *PulumiObjectStorageService) CreateObjectStorageResource(req *dto.ObjectStorageCreateRequest) pulumi.RunFunc {
 	return func(ctx *pulumi.Context) error {
 		_, err := s3.NewBucket(ctx, req.Name, &s3.BucketArgs{
 			Versioning: s3.BucketVersioningArgs{

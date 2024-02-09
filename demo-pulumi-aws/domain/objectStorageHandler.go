@@ -2,7 +2,8 @@ package domain
 
 import (
 	"context"
-	"demo-pulumi-aws/adapters"
+	"demo-pulumi-aws/dto"
+	"demo-pulumi-aws/service"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -10,12 +11,7 @@ import (
 
 type ObjectStorageHandler struct {
 	project                    string
-	pulumiObjectStorageService *adapters.PulumiObjectStorageService
-}
-
-type ObjectStorageCreateRequest struct {
-	Name       string `json:"name"`
-	Versioning bool   `json:"enable_versioning"`
+	pulumiObjectStorageService *service.PulumiObjectStorageService
 }
 
 type ObjectStorageCreateResponse struct {
@@ -23,7 +19,7 @@ type ObjectStorageCreateResponse struct {
 	URL   string `json:"url"`
 }
 
-func NewObjectStorageHandler(project string, pulumiObjectStorageService *adapters.PulumiObjectStorageService) *ObjectStorageHandler {
+func NewObjectStorageHandler(project string, pulumiObjectStorageService *service.PulumiObjectStorageService) *ObjectStorageHandler {
 	return &ObjectStorageHandler{
 		project:                    project,
 		pulumiObjectStorageService: pulumiObjectStorageService,
@@ -31,7 +27,7 @@ func NewObjectStorageHandler(project string, pulumiObjectStorageService *adapter
 }
 
 func (objHandler *ObjectStorageHandler) CreateBucket(ginCtx *gin.Context) {
-	req := &ObjectStorageCreateRequest{}
+	req := &dto.ObjectStorageCreateRequest{}
 
 	if err := json.NewDecoder(ginCtx.Request.Body).Decode(&req); err != nil {
 		ginCtx.JSON(http.StatusBadRequest, gin.H{"error": "couldn't parse request body"})

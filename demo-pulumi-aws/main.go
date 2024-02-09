@@ -1,9 +1,9 @@
 package main
 
 import (
-	"demo-pulumi-aws/adapters"
 	"demo-pulumi-aws/domain"
 	"demo-pulumi-aws/infrastructure"
+	"demo-pulumi-aws/service"
 )
 
 type BucketCreateRequest struct {
@@ -19,7 +19,7 @@ type BucketCreateResponse struct {
 var project = "demo-pulumi-aws"
 
 func main() {
-	objectStorageService := adapters.NewPulumiObjectStorageService()
+	objectStorageService := service.NewPulumiObjectStorageService()
 	objectStorageHandler := domain.NewObjectStorageHandler(project, objectStorageService)
 	httpRouter := infrastructure.NewHttpRouter(objectStorageHandler)
 	pulumiSetup := infrastructure.NewPulumiSetup()
