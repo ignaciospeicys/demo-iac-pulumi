@@ -19,7 +19,7 @@ var project = "demo-pulumi-aws"
 
 func (ph PulumiHandler) DeleteStack(ctx *gin.Context) {
 	stackName := ctx.Param("stack")
-	s, err := auto.SelectStackInlineSource(ctx, stackName, project, nil) //TODO verify if this works
+	s, err := auto.SelectStackInlineSource(ctx, stackName, project, nil)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

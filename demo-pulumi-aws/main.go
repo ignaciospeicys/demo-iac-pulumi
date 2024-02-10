@@ -6,16 +6,6 @@ import (
 	"demo-pulumi-aws/service"
 )
 
-type BucketCreateRequest struct {
-	Name       string `json:"name"`
-	Versioning bool   `json:"enable_versioning"`
-}
-
-type BucketCreateResponse struct {
-	Stack string `json:"stack"`
-	URL   string `json:"url"`
-}
-
 var project = "demo-pulumi-aws"
 
 func main() {
