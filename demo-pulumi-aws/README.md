@@ -20,7 +20,12 @@ After setting up your AWS account, configure your AWS credentials locally. You c
 - Create Access Key for that user (CLI use case)
 - **AWS CLI**: Use the AWS CLI and run **`aws configure`** to set up your credentials. Pulumi will use these credentials by default.
 
-### **4. Run the program!**
+
+### **4. Configure Pulumi Access Token**
+
+You’ll need a Pulumi access token so that your programs can store the resulting state in the Pulumi Cloud. The easiest way to obtain a token is to run ``pulumi login`` from the command line.
+
+### **5. Run the program!**
 
 Due to the automated nature of the program, it is not needed to run **`pulumi up`** through the CLI to preview and deploy your AWS resources. 
 

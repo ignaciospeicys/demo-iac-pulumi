@@ -16,7 +16,7 @@ func NewPulumiObjectStorageService(pulumiDeployService *PulumiDeployService) *Pu
 
 func (service *PulumiObjectStorageService) CreateObjectStorageResource(req *dto.ObjectStorageCreateRequest) pulumi.RunFunc {
 	return func(ctx *pulumi.Context) error {
-		_, err := s3.NewBucket(ctx, req.Name, &s3.BucketArgs{
+		bucket, err := s3.NewBucket(ctx, req.Name, &s3.BucketArgs{
 			Versioning: s3.BucketVersioningArgs{
 				Enabled: pulumi.Bool(req.Versioning),
 			},
@@ -24,7 +24,8 @@ func (service *PulumiObjectStorageService) CreateObjectStorageResource(req *dto.
 		if err != nil {
 			return err
 		}
-		ctx.Export("bucketName", pulumi.String(req.Name))
+		ctx.Export("bucketName", bucket.Bucket)
+		ctx.Export("bucketDomain", bucket.BucketDomainName)
 		return nil
 	}
 }

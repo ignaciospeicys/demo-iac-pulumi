@@ -15,8 +15,9 @@ type ObjectStorageHandler struct {
 }
 
 type ObjectStorageCreateResponse struct {
-	Stack string `json:"stack"`
-	URL   string `json:"url"`
+	Stack      string `json:"stack"`
+	BucketName string `json:"bucket_name"`
+	Domain     string `json:"domain"`
 }
 
 func NewObjectStorageHandler(project string, pulumiObjectStorageService *service.PulumiObjectStorageService, pulumiDeployService *service.PulumiDeployService) *ObjectStorageHandler {
@@ -47,7 +48,8 @@ func (objHandler *ObjectStorageHandler) CreateBucket(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, &ObjectStorageCreateResponse{
-		Stack: stackName,
-		URL:   upRes.Outputs["bucketName"].Value.(string),
+		Stack:      stackName,
+		BucketName: upRes.Outputs["bucketName"].Value.(string),
+		Domain:     upRes.Outputs["bucketDomain"].Value.(string),
 	})
 }
