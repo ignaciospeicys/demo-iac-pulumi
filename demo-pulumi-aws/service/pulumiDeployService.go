@@ -8,6 +8,7 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"io"
 	"os"
+	"time"
 )
 
 type PulumiDeployService struct {
@@ -33,8 +34,18 @@ func NewPulumiDeployService() *PulumiDeployService {
 //end TODO Move class
 
 func (service *PulumiDeployService) PrepareAndDeployResource(ctx context.Context, stackName, project string, programRun pulumi.RunFunc) (*auto.UpResult, error) {
+
+	// Create the logs directory if it doesn't already exist
+	logsDir := "./logs"
+	if err := os.MkdirAll(logsDir, os.ModePerm); err != nil {
+		return nil, fmt.Errorf("failed to create logs directory: %v", err)
+	}
+
+	// Create a dynamic log file name with the current date
+	logFileName := fmt.Sprintf("%s/pulumi-deployments-%s-%s--%d.log", logsDir, project, stackName, time.Now().Unix())
+
 	// Create a custom writer to log to a file
-	logFile, err := os.OpenFile("pulumi-deployments.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, err := os.OpenFile(logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open log file: %v", err)
 	}
@@ -52,9 +63,10 @@ func (service *PulumiDeployService) PrepareAndDeployResource(ctx context.Context
 	}
 	_ = s.SetConfig(ctx, "aws:region", auto.ConfigValue{Value: "us-west-2"})
 
-	upRes, err := s.Up(ctx, optup.ProgressStreams(mw), optup.ProgressStreams(os.Stdout))
+	upRes, err := s.Up(ctx, optup.ProgressStreams(mw))
 	if err != nil {
 		return nil, err
 	}
+
 	return &upRes, nil
 }

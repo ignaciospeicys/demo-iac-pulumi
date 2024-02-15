@@ -1,0 +1,26 @@
+Updating (stg)
+
+View Live: https://app.pulumi.com/ignaciospeicys/demo-pulumi-aws/stg/updates/9
+
+
+    pulumi:pulumi:Stack demo-pulumi-aws-stg running 
+@ Updating.....
+ +  aws:s3:Bucket my-bucket6 creating (0s) 
+@ Updating........
+ +  aws:s3:Bucket my-bucket6 created (5s) 
+@ Updating....
+ -  aws:s3:Bucket my-bucket5 deleting (0s) 
+@ Updating.....
+ -  aws:s3:Bucket my-bucket5 deleted (1s) 
+    pulumi:pulumi:Stack demo-pulumi-aws-stg  
+Outputs:
+  ~ bucketDomain: "my-bucket5-bae27f2.s3.amazonaws.com" => "my-bucket6-ccc14c2.s3.amazonaws.com"
+  ~ bucketName  : "my-bucket5-bae27f2" => "my-bucket6-ccc14c2"
+
+Resources:
+    + 1 created
+    - 1 deleted
+    2 changes. 1 unchanged
+
+Duration: 11s
+
