@@ -1,17 +1,18 @@
-package domain
+package primary
 
 import (
+	"demo-pulumi-aws/application/ports/driven"
 	"demo-pulumi-aws/dto"
-	"demo-pulumi-aws/service"
+	"demo-pulumi-aws/infrastructure/adapters/secondary"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type ObjectStorageHandler struct {
-	project                    string
-	pulumiObjectStorageService *service.PulumiObjectStorageService
-	pulumiDeployService        *service.PulumiDeployService
+	project                 string
+	pulumiObjectStoragePort driven.PulumiObjectStoragePort
+	pulumiStackService      *secondary.PulumiStackService
 }
 
 type ObjectStorageCreateResponse struct {
@@ -20,28 +21,26 @@ type ObjectStorageCreateResponse struct {
 	Domain     string `json:"domain"`
 }
 
-func NewObjectStorageHandler(project string, pulumiObjectStorageService *service.PulumiObjectStorageService, pulumiDeployService *service.PulumiDeployService) *ObjectStorageHandler {
+func NewObjectStorageHandler(project string, pulumiObjectStoragePort driven.PulumiObjectStoragePort, pulumiStackService *secondary.PulumiStackService) *ObjectStorageHandler {
 	return &ObjectStorageHandler{
-		project:                    project,
-		pulumiObjectStorageService: pulumiObjectStorageService,
-		pulumiDeployService:        pulumiDeployService,
+		project:                 project,
+		pulumiObjectStoragePort: pulumiObjectStoragePort,
+		pulumiStackService:      pulumiStackService,
 	}
 }
 
-func (objHandler *ObjectStorageHandler) CreateBucket(ctx *gin.Context) {
+func (objHandler *ObjectStorageHandler) CreateObjectStorage(ctx *gin.Context) {
 	req := &dto.ObjectStorageCreateRequest{}
-
 	if err := json.NewDecoder(ctx.Request.Body).Decode(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "couldn't parse request body"})
 		return
 	}
-
 	// Create the resource
-	storageResource := objHandler.pulumiObjectStorageService.CreateObjectStorageResource(req)
+	storageResource := objHandler.pulumiObjectStoragePort.CreateObjectStorageResource(req)
 
 	// Create or select the stack
 	stackName := ctx.Param("stack")
-	upRes, err := objHandler.pulumiDeployService.PrepareAndDeployResource(ctx, stackName, objHandler.project, storageResource)
+	upRes, err := objHandler.pulumiStackService.PrepareAndDeployResource(ctx, stackName, objHandler.project, storageResource)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

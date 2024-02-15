@@ -1,4 +1,4 @@
-package service
+package secondary
 
 import (
 	"demo-pulumi-aws/dto"
@@ -7,11 +7,10 @@ import (
 )
 
 type PulumiObjectStorageService struct {
-	pulumiDeployService *PulumiDeployService
 }
 
-func NewPulumiObjectStorageService(pulumiDeployService *PulumiDeployService) *PulumiObjectStorageService {
-	return &PulumiObjectStorageService{pulumiDeployService: pulumiDeployService}
+func NewPulumiObjectStorageService() *PulumiObjectStorageService {
+	return &PulumiObjectStorageService{}
 }
 
 func (service *PulumiObjectStorageService) CreateObjectStorageResource(req *dto.ObjectStorageCreateRequest) pulumi.RunFunc {

@@ -1,3 +1,12 @@
+# Pulumi Automation Demo
+
+## Architecture
+
+Designed with the principles of hexagonal architecture, also known as ports and adapters, this application prioritizes flexibility, maintainability, and ease of adaptation to changes, ensuring long-term efficiency and scalability.
+
+
+![Architecture](docs/hex_architecture.png)
+
 ### **1. Set Up AWS Account**
 
 First, if you haven't already, create a personal AWS account. You'll then need to set up an IAM user or role with the necessary permissions for the resources you want to manage with Pulumi.

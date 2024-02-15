@@ -1,22 +1,23 @@
 package main
 
 import (
-	"demo-pulumi-aws/domain"
 	"demo-pulumi-aws/infrastructure"
-	"demo-pulumi-aws/service"
+	"demo-pulumi-aws/infrastructure/adapters/primary"
+	"demo-pulumi-aws/infrastructure/adapters/secondary"
+	"demo-pulumi-aws/infrastructure/setup"
 )
 
 var project = "demo-pulumi-aws"
 
 func main() {
-	pulumiDeployService := service.NewPulumiDeployService()
-	objectStorageService := service.NewPulumiObjectStorageService(pulumiDeployService)
-	objectStorageHandler := domain.NewObjectStorageHandler(project, objectStorageService, pulumiDeployService)
-	pulumiHandler := domain.NewPulumiHandler()
+	pulumiStackService := secondary.NewPulumiStackService()
+	objectStorageService := secondary.NewPulumiObjectStorageService()
+	objectStorageHandler := primary.NewObjectStorageHandler(project, objectStorageService, pulumiStackService)
+	pulumiHandler := primary.NewPulumiHandler(pulumiStackService)
 	httpRouter := infrastructure.NewHttpRouter(objectStorageHandler, pulumiHandler)
-	pulumiSetup := infrastructure.NewPulumiSetup()
+	pulumiSetup := setup.NewPulumiSetup()
 
-	r := httpRouter.SetupHttpServer()
+	r := httpRouter.SetupRoutes()
 
 	pulumiSetup.EnsurePlugins()
 
