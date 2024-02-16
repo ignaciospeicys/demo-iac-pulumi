@@ -34,7 +34,6 @@ func (ps *PulumiSetup) CreateWorkspace() {
 		fmt.Printf("Failed to initialize local workspace: %v\n", err)
 		os.Exit(1)
 	}
-	w.SetEnvVar("PULUMI_CONFIG_PASSPHRASE", "n4ch0Pu1um1")
 
 	err = w.InstallPlugin(ctx, "aws", awsPluginVersion)
 	if err != nil {
