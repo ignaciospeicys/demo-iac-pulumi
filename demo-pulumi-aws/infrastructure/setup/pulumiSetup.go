@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/pulumi/pulumi/sdk/v3/go/auto"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/workspace"
 	"os"
 )
 
@@ -20,13 +21,28 @@ func NewPulumiSetup() *PulumiSetup {
 func (ps *PulumiSetup) CreateWorkspace() {
 	ctx := context.Background()
 
-	// File backend
-	localBackendURL := "file:///Users/ignaciospeicys/pulumi-backend/"
-	envVars := auto.EnvVars(map[string]string{
-		"PULUMI_BACKEND_URL": localBackendURL,
+	proj := auto.Project(workspace.Project{
+		Name:    "demo-aws-pulumi",
+		Runtime: workspace.NewProjectRuntimeInfo("go", nil),
+		Backend: &workspace.ProjectBackend{
+			URL: "file:///Users/ignaciospeicys/pulumi-file-backend/",
+		},
 	})
 
-	w, err := auto.NewLocalWorkspace(ctx, envVars)
+	// File backend
+	localBackendURL := "file:///Users/ignaciospeicys/pulumi-file-backend/"
+	envVars := auto.EnvVars(map[string]string{
+		"PULUMI_BACKEND_URL":       localBackendURL,
+		"PULUMI_CONFIG_PASSPHRASE": "n4ch0Pu1um1",
+	})
+
+	// Creating a new local workspace with these environment variables
+	workspaceOptions := []auto.LocalWorkspaceOption{
+		proj,
+		envVars,
+	}
+
+	w, err := auto.NewLocalWorkspace(ctx, workspaceOptions...)
 	if err != nil {
 		fmt.Printf("Failed to initialize local workspace: %v\n", err)
 		os.Exit(1)

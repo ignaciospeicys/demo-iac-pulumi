@@ -7,6 +7,7 @@ import (
 	"demo-pulumi-aws/infrastructure/setup"
 )
 
+// TODO ver si es redundante gracias a la config
 var project = "demo-pulumi-aws"
 
 func main() {

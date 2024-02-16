@@ -14,6 +14,7 @@ func NewPulumiHandler(pulumiStackService *secondary.PulumiStackService) *PulumiS
 	return &PulumiStackHandler{pulumiStackService: pulumiStackService}
 }
 
+// TODO ver si es redundante gracias a la config
 var project = "demo-pulumi-aws"
 
 func (ph PulumiStackHandler) DeleteStack(ctx *gin.Context) {

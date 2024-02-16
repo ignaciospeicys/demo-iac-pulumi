@@ -7,6 +7,12 @@ Designed with the principles of hexagonal architecture, also known as ports and 
 
 ![Architecture](docs/hex_architecture.png)
 
+## Pulumi State
+
+This project utilizes the local filesystem in order to store state, but it also works with Pulumi Cloud out of the box, [click here](https://www.pulumi.com/docs/concepts/state/) for more information.
+
+---
+
 ### **1. Set Up AWS Account**
 
 First, if you haven't already, create a personal AWS account. You'll then need to set up an IAM user or role with the necessary permissions for the resources you want to manage with Pulumi.
