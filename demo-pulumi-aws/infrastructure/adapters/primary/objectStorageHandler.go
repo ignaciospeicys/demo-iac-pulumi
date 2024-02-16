@@ -4,13 +4,13 @@ import (
 	"demo-pulumi-aws/application/ports/driven"
 	"demo-pulumi-aws/dto"
 	"demo-pulumi-aws/infrastructure/adapters/secondary"
+	"demo-pulumi-aws/infrastructure/setup"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type ObjectStorageHandler struct {
-	project                 string
 	pulumiObjectStoragePort driven.PulumiObjectStoragePort
 	pulumiStackService      *secondary.PulumiStackService
 }
@@ -21,9 +21,8 @@ type ObjectStorageCreateResponse struct {
 	Domain     string `json:"domain"`
 }
 
-func NewObjectStorageHandler(project string, pulumiObjectStoragePort driven.PulumiObjectStoragePort, pulumiStackService *secondary.PulumiStackService) *ObjectStorageHandler {
+func NewObjectStorageHandler(pulumiObjectStoragePort driven.PulumiObjectStoragePort, pulumiStackService *secondary.PulumiStackService) *ObjectStorageHandler {
 	return &ObjectStorageHandler{
-		project:                 project,
 		pulumiObjectStoragePort: pulumiObjectStoragePort,
 		pulumiStackService:      pulumiStackService,
 	}
@@ -40,7 +39,7 @@ func (objHandler *ObjectStorageHandler) CreateObjectStorage(ctx *gin.Context) {
 
 	// Create or select the stack
 	stackName := ctx.Param("stack")
-	upRes, err := objHandler.pulumiStackService.PrepareAndDeployResource(ctx, stackName, objHandler.project, storageResource)
+	upRes, err := objHandler.pulumiStackService.PrepareAndDeployResource(ctx, stackName, setup.ProjectName, storageResource)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -7,13 +7,10 @@ import (
 	"demo-pulumi-aws/infrastructure/setup"
 )
 
-// TODO ver si es redundante gracias a la config
-var project = "demo-pulumi-aws"
-
 func main() {
 	pulumiStackService := secondary.NewPulumiStackService()
 	objectStorageService := secondary.NewPulumiObjectStorageService()
-	objectStorageHandler := primary.NewObjectStorageHandler(project, objectStorageService, pulumiStackService)
+	objectStorageHandler := primary.NewObjectStorageHandler(objectStorageService, pulumiStackService)
 	pulumiHandler := primary.NewPulumiHandler(pulumiStackService)
 	httpRouter := infrastructure.NewHttpRouter(objectStorageHandler, pulumiHandler)
 	pulumiSetup := setup.NewPulumiSetup()

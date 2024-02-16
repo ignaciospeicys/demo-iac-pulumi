@@ -18,11 +18,13 @@ func NewPulumiSetup() *PulumiSetup {
 	return &PulumiSetup{}
 }
 
+const ProjectName = "demo-pulumi-aws"
+
 func (ps *PulumiSetup) CreateWorkspace() {
 	ctx := context.Background()
 
 	proj := auto.Project(workspace.Project{
-		Name:    "demo-pulumi-aws",
+		Name:    ProjectName,
 		Runtime: workspace.NewProjectRuntimeInfo("go", nil),
 		Backend: &workspace.ProjectBackend{
 			URL: "file:///Users/ignaciospeicys/pulumi-file-backend/",
