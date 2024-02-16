@@ -17,9 +17,16 @@ func NewPulumiSetup() *PulumiSetup {
 	return &PulumiSetup{}
 }
 
-func (ps *PulumiSetup) EnsurePlugins() {
+func (ps *PulumiSetup) CreateWorkspace() {
 	ctx := context.Background()
-	w, err := auto.NewLocalWorkspace(ctx)
+
+	// File backend
+	localBackendURL := "file:///Users/ignaciospeicys/pulumi-backend/"
+	envVars := auto.EnvVars(map[string]string{
+		"PULUMI_BACKEND_URL": localBackendURL,
+	})
+
+	w, err := auto.NewLocalWorkspace(ctx, envVars)
 	if err != nil {
 		fmt.Printf("Failed to initialize local workspace: %v\n", err)
 		os.Exit(1)

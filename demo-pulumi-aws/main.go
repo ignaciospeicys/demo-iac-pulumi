@@ -19,7 +19,7 @@ func main() {
 
 	r := httpRouter.SetupRoutes()
 
-	pulumiSetup.EnsurePlugins()
+	pulumiSetup.CreateWorkspace()
 
 	_ = r.Run("127.0.0.1:8083")
 }
