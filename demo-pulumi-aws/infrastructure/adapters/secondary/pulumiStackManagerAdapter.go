@@ -25,12 +25,10 @@ func (service *PulumiStackService) PrepareAndDeployResource(ctx context.Context,
 	}
 	defer mw.Close()
 
-	// Create or select the stack
-	s, err := auto.UpsertStackInlineSource(ctx, stackName, project, programRun)
+	s, err := prepareStack(ctx, stackName, project, programRun)
 	if err != nil {
 		return nil, err
 	}
-	_ = s.SetConfig(ctx, "aws:region", auto.ConfigValue{Value: "us-west-2"})
 
 	upRes, err := s.Up(ctx, optup.ProgressStreams(mw))
 	if err != nil {
@@ -45,7 +43,6 @@ func (service *PulumiStackService) DeleteStack(ctx context.Context, project, sta
 	if err != nil {
 		return err
 	}
-	_ = s.SetConfig(ctx, "aws:region", auto.ConfigValue{Value: "us-west-2"})
 
 	_, err = s.Destroy(ctx, optdestroy.ProgressStreams(os.Stdout))
 	if err != nil {
@@ -57,4 +54,13 @@ func (service *PulumiStackService) DeleteStack(ctx context.Context, project, sta
 		return err
 	}
 	return nil
+}
+
+func prepareStack(ctx context.Context, stackName string, project string, programRun pulumi.RunFunc) (auto.Stack, error) {
+	s, err := auto.UpsertStackInlineSource(ctx, stackName, project, programRun)
+	if err != nil {
+		return auto.Stack{}, err
+	}
+	_ = s.SetConfig(ctx, "aws:region", auto.ConfigValue{Value: "us-west-2"})
+	return s, nil
 }
