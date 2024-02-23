@@ -8,6 +8,13 @@ import (
 )
 
 func main() {
+	db := setup.CreateDBConnection()
+	gormDB := setup.InitGormDB(db)
+	resourceRepository := secondary.NewResourceRepository(gormDB)
+	resourceConfigurationRepository := secondary.NewConfigurationRepository(gormDB)
+	stackRepository := secondary.NewStackRepository(gormDB)
+	resourceStackRepository := secondary.NewResourceStackRepository(gormDB)
+
 	pulumiStackService := secondary.NewPulumiStackService()
 	objectStorageService := secondary.NewPulumiObjectStorageService()
 	objectStorageHandler := primary.NewObjectStorageHandler(objectStorageService, pulumiStackService)

@@ -45,6 +45,8 @@ func (objHandler *ObjectStorageHandler) CreateObjectStorage(ctx *gin.Context) {
 		return
 	}
 
+	//save to DB
+
 	ctx.JSON(http.StatusOK, &ObjectStorageCreateResponse{
 		Stack:      stackName,
 		BucketName: upRes.Outputs["bucketName"].Value.(string),
