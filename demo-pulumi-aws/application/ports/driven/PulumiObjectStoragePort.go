@@ -6,5 +6,5 @@ import (
 )
 
 type PulumiObjectStoragePort interface {
-	CreateObjectStorageResource(req *dto.ObjectStorageCreateRequest) pulumi.RunFunc
+	CreateObjectStorageResource(req *dto.ObjectStorageCreateRequest, resources []dto.ResourceDTO) pulumi.RunFunc
 }
