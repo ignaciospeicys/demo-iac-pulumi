@@ -9,15 +9,25 @@ import (
 
 type PulumiStackHandler struct {
 	pulumiStackService *secondary.PulumiStackService
+	dbService          *secondary.ResourceDBService
 }
 
-func NewPulumiHandler(pulumiStackService *secondary.PulumiStackService) *PulumiStackHandler {
-	return &PulumiStackHandler{pulumiStackService: pulumiStackService}
+func NewPulumiHandler(pulumiStackService *secondary.PulumiStackService, dbService *secondary.ResourceDBService) *PulumiStackHandler {
+	return &PulumiStackHandler{
+		pulumiStackService: pulumiStackService,
+		dbService:          dbService,
+	}
 }
 
 func (ph PulumiStackHandler) DeleteStack(ctx *gin.Context) {
 	stackName := ctx.Param("stack")
 	err := ph.pulumiStackService.DeleteStack(ctx, setup.ProjectName, stackName)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = ph.dbService.DeleteResourcesByStackName(stackName)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
