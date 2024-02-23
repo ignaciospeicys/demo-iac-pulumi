@@ -12,8 +12,6 @@ func main() {
 	gormDB := setup.InitGormDB(db)
 	resourceRepository := secondary.NewResourceRepository(gormDB)
 	resourceConfigurationRepository := secondary.NewConfigurationRepository(gormDB)
-	stackRepository := secondary.NewStackRepository(gormDB)
-	resourceStackRepository := secondary.NewResourceStackRepository(gormDB)
 
 	pulumiStackService := secondary.NewPulumiStackService()
 	objectStorageService := secondary.NewPulumiObjectStorageService()

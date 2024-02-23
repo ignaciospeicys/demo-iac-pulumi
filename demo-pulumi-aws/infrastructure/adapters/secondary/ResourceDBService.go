@@ -4,21 +4,15 @@ package secondary
 type ResourceDBService struct {
 	resourceRepository              *ResourceRepository
 	resourceConfigurationRepository *ConfigurationRepository
-	stackRepository                 *StackRepository
-	resourceStackRepository         *ResourceStackRepository
 }
 
 // NewResourceDBService creates a new instance of InfrastructureService.
 func NewResourceDBService(
 	resourceRepository *ResourceRepository,
-	resourceConfigurationRepository *ConfigurationRepository,
-	stackRepository *StackRepository,
-	resourceStackRepository *ResourceStackRepository) *ResourceDBService {
+	resourceConfigurationRepository *ConfigurationRepository) *ResourceDBService {
 	return &ResourceDBService{
 		resourceRepository:              resourceRepository,
-		resourceConfigurationRepository: resourceConfigurationRepository,
-		stackRepository:                 stackRepository,
-		resourceStackRepository:         resourceStackRepository,
+		resourceConfigurationRepository: resourceConfigurationRepository
 	}
 }
 
