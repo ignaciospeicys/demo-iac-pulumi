@@ -17,9 +17,10 @@ type ObjectStorageHandler struct {
 }
 
 type ObjectStorageCreateResponse struct {
-	Stack      string `json:"stack"`
-	BucketName string `json:"bucket_name"`
-	Domain     string `json:"domain"`
+	Stack         string `json:"stack"`
+	BucketName    string `json:"bucket_name"`
+	QualifiedName string `json:"qualified_name"`
+	Domain        string `json:"domain"`
 }
 
 func NewObjectStorageHandler(pulumiObjectStoragePort driven.PulumiObjectStoragePort, pulumiStackService *secondary.PulumiStackService, dbService *secondary.ResourceDBService) *ObjectStorageHandler {
@@ -49,10 +50,11 @@ func (objHandler *ObjectStorageHandler) CreateObjectStorage(ctx *gin.Context) {
 		return
 	}
 
-	resourceName := upRes.Outputs["bucketName"].Value.(string)
+	qualifiedName := upRes.Outputs["bucketName"].Value.(string)
 
 	err = objHandler.dbService.SaveResource(dto.ResourceDTO{
-		ResourceName:   resourceName,
+		ResourceName:   req.Name,
+		QualifiedName:  qualifiedName,
 		ResourceType:   "object-storage",
 		StackName:      stackName,
 		Status:         "created",
@@ -64,8 +66,9 @@ func (objHandler *ObjectStorageHandler) CreateObjectStorage(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, &ObjectStorageCreateResponse{
-		Stack:      stackName,
-		BucketName: resourceName,
-		Domain:     upRes.Outputs["bucketDomain"].Value.(string),
+		Stack:         stackName,
+		BucketName:    req.Name,
+		QualifiedName: qualifiedName,
+		Domain:        upRes.Outputs["bucketDomain"].Value.(string),
 	})
 }

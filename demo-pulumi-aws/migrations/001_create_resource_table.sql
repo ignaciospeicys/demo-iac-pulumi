@@ -2,6 +2,7 @@
 CREATE TABLE IF NOT EXISTS resources (
     resource_id SERIAL PRIMARY KEY,
     resource_name VARCHAR(255) NOT NULL,
+    qualified_resource_name VARCHAR(255) NOT NULL,
     resource_type VARCHAR(50) NOT NULL,
     stack_name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -10,7 +11,7 @@ CREATE TABLE IF NOT EXISTS resources (
 );
 
 -- Create Configuration Table
-CREATE TABLE IF NOT EXISTS configuration (
+CREATE TABLE IF NOT EXISTS configurations (
     config_id SERIAL PRIMARY KEY,
     resource_id INTEGER NOT NULL,
     config_key VARCHAR(255) NOT NULL,

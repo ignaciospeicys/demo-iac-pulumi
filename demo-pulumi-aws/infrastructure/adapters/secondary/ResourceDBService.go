@@ -43,6 +43,7 @@ func (service *ResourceDBService) FetchAllResources(stack string) ([]dto.Resourc
 
 		resourceDTO := dto.ResourceDTO{
 			ResourceName:   resource.ResourceName,
+			QualifiedName:  resource.QualifiedResourceName,
 			ResourceType:   resource.ResourceType,
 			StackName:      resource.StackName,
 			Status:         resource.Status,
@@ -65,10 +66,11 @@ func (service *ResourceDBService) SaveResource(resourceDTO dto.ResourceDTO) erro
 
 	// Save the resource
 	resource := model.Resource{
-		ResourceName: resourceDTO.ResourceName,
-		ResourceType: resourceDTO.ResourceType,
-		StackName:    resourceDTO.StackName,
-		Status:       resourceDTO.Status,
+		ResourceName:          resourceDTO.ResourceName,
+		QualifiedResourceName: resourceDTO.QualifiedName,
+		ResourceType:          resourceDTO.ResourceType,
+		StackName:             resourceDTO.StackName,
+		Status:                resourceDTO.Status,
 	}
 
 	if err := tx.Create(&resource).Error; err != nil {
@@ -93,25 +95,6 @@ func (service *ResourceDBService) SaveResource(resourceDTO dto.ResourceDTO) erro
 	return tx.Commit().Error
 }
 
-func (service *ResourceDBService) DeleteResourceByName(resourceName string) error {
-	tx := service.resourceRepository.db.Begin()
-	if tx.Error != nil {
-		return tx.Error
-	}
-
-	if err := tx.Where("resource_id = (SELECT resource_id FROM resources WHERE resource_name = ?)", resourceName).
-		Delete(&model.Configuration{}).Error; err != nil {
-		tx.Rollback() // Rollback the transaction on error
-		return err
-	}
-
-	if err := tx.Where("resource_name = ?", resourceName).Delete(&model.Resource{}).Error; err != nil {
-		tx.Rollback() // Rollback the transaction on error
-		return err
-	}
-	return tx.Commit().Error
-}
-
 func (service *ResourceDBService) DeleteResourcesByStackName(stackName string) error {
 	tx := service.resourceRepository.db.Begin()
 	if tx.Error != nil {
@@ -124,15 +107,13 @@ func (service *ResourceDBService) DeleteResourcesByStackName(stackName string) e
 		tx.Rollback()
 		return err
 	}
-
-	if len(resourceIDs) > 0 { // Ensure there are resources to delete configurations for
-		if err := tx.Where("resource_id IN ?", resourceIDs).
-			Delete(&model.Configuration{}).Error; err != nil {
+	if len(resourceIDs) > 0 {
+		if err := tx.Where("resource_id IN (?)", resourceIDs). // Corrected placeholder usage
+									Delete(&model.Configuration{}).Error; err != nil {
 			tx.Rollback() // Rollback the transaction on error
 			return err
 		}
 	}
-
 	if err := tx.Where("stack_name = ?", stackName).Delete(&model.Resource{}).Error; err != nil {
 		tx.Rollback() // Rollback the transaction on error
 		return err
