@@ -81,7 +81,7 @@ func (service *ResourceDBService) SaveResource(resourceDTO dto.ResourceDTO) erro
 	// Save each configuration
 	for _, configDTO := range resourceDTO.Configurations {
 		config := model.Configuration{
-			ResourceID:  resource.ResourceID, // Set the foreign key to the newly created resource
+			ResourceID:  resource.ResourceID,
 			ConfigKey:   configDTO.ConfigKey,
 			ConfigValue: configDTO.ConfigValue,
 		}

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type ObjectStorageHandler struct {
@@ -58,7 +59,7 @@ func (objHandler *ObjectStorageHandler) CreateObjectStorage(ctx *gin.Context) {
 		ResourceType:   "object-storage",
 		StackName:      stackName,
 		Status:         "created",
-		Configurations: []dto.ConfigurationDTO{{ConfigKey: "Versioning", ConfigValue: "true"}},
+		Configurations: []dto.ConfigurationDTO{{ConfigKey: "Versioning", ConfigValue: strconv.FormatBool(req.Versioning)}},
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
