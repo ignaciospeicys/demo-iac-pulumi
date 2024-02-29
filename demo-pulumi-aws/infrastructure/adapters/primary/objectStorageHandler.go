@@ -72,3 +72,23 @@ func (objHandler *ObjectStorageHandler) CreateObjectStorage(ctx *gin.Context) {
 		Domain:        upRes.Outputs["bucketDomain"].Value.(string),
 	})
 }
+
+func (objHandler *ObjectStorageHandler) RefreshObjectStorage(ctx *gin.Context) {
+	stackName := ctx.Param("stack")
+	resources, err := objHandler.dbService.FetchAllResources(stackName)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	storageResource := objHandler.pulumiObjectStoragePort.RefreshObjectStorageResource(resources)
+
+	// Create or select the stack
+	_, err = objHandler.pulumiStackService.PrepareAndDeployResource(ctx, stackName, setup.ProjectName, storageResource)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
+}

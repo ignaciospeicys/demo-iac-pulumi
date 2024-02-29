@@ -26,6 +26,7 @@ func (hr HttpRouter) SetupRoutes() (r *gin.Engine) {
 
 	//Storage Objects
 	r.POST("/:stack/bucket", hr.objectStorageHandler.CreateObjectStorage)
+	r.GET("/:stack/bucket", hr.objectStorageHandler.RefreshObjectStorage)
 
 	if err := r.SetTrustedProxies([]string{"127.0.0.1"}); err != nil {
 		log.Fatal("could not set trusted proxies: ", err)

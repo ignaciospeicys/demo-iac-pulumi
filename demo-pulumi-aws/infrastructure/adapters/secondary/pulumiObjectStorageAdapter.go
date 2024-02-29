@@ -56,3 +56,20 @@ func findVersioningConfig(configs []dto.ConfigurationDTO) bool {
 	}
 	return false
 }
+
+func (service *PulumiObjectStorageService) RefreshObjectStorageResource(resources []dto.ResourceDTO) pulumi.RunFunc {
+	return func(ctx *pulumi.Context) error {
+		//re-declares existing resources so pulumi has them in the context
+		for _, r := range resources {
+			_, err := s3.NewBucket(ctx, r.ResourceName, &s3.BucketArgs{
+				Versioning: s3.BucketVersioningArgs{
+					Enabled: pulumi.Bool(findVersioningConfig(r.Configurations)),
+				},
+			})
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+}

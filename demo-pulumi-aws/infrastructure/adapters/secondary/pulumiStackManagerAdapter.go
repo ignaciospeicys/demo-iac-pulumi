@@ -30,6 +30,7 @@ func (service *PulumiStackService) PrepareAndDeployResource(ctx context.Context,
 		return nil, err
 	}
 
+	_, _ = s.Refresh(ctx)
 	upRes, err := s.Up(ctx, optup.ProgressStreams(mw))
 	if err != nil {
 		return nil, err
